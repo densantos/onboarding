@@ -36,7 +36,16 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.ACCOUNT }}:role/GitHubCICDOnboardingRole
           role-session-name: GitHubActions
       
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Generate Password
+        id: generate_password
+        run: |
+          echo "PASSWORD=$(python generate_password.py)" >> $GITHUB_ENV
+
       - name: Create secret
         run: |
-          PPASSWORD=$(aws secretsmanager get-random-password --require-each-included-type --password-length 10 --output text --query 'RandomPassword')
-          aws secretsmanager create-secret --name "Secret-${CUSTOMER}" --secret-string "{\"db_user\":\"postgres\",\"password\":\"$PASSWORD\"}"
+          aws secretsmanager create-secret --name "Secret-${{ env.CUSTOMER }}" --secret-string "{\"${{ env.ENVIRONMENT }}}-db_user\":\"postgres\",\"password\":\"${{ env.PASSWORD }}"\"}"
