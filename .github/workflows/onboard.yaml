@@ -1,0 +1,49 @@
+name: Onboard
+
+on:
+  push:
+    branches:
+      - main  # or any branch you want the workflow to run on
+
+jobs:
+  authenticate:
+    name: Authenticate to AWS
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install yq (YAML Processor)
+        run: sudo snap install yq  
+
+      - name: Get Environment Variables
+        id: read_variables
+        run: |
+          echo "REGION=$(yq e .region onboarding.yaml)" >> $GITHUB_ENV
+          echo "ENVIRONMENT=$(yq e .environment onboarding.yaml)" >> $GITHUB_ENV
+          echo "CUSTOMER=$(yq e .customer onboarding.yaml)" >> $GITHUB_ENV
+          echo "ACCOUNT=$(yq e .account onboarding.yaml)" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.REGION }}
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT }}:role/GitHubCICDOnboardingRole
+          role-session-name: GitHubActions
+      
+      - name: Create secret
+        run: |
+          PPASSWORD=$(aws secretsmanager get-random-password --require-each-included-type --password-length 10 --output text --query 'RandomPassword')
+          aws secretsmanager create-secret --name "Secret-${CUSTOMER}" --secret-string "{\"db_user\":\"postgres\",\"password\":\"$PASSWORD\"}"
+
+#to clone
+git clone git@github.com:personal_account_name/repo_name.git
+git clone git@github.com-work_user1:work_user1/repo_name.git
+
+# set origin
+git remote set-url origin git@github.com-dsantos:densantos/onboarding.git
