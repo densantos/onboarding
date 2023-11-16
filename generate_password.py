@@ -12,7 +12,3 @@ def generate_password(length=12):
     # Generating a random password
     password = ''.join(secrets.choice(characters) for i in range(length))
     return password
-
-# Example usage
-password = generate_password(12)
-print(f"Generated Password: {password}")

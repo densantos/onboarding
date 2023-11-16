@@ -7,7 +7,7 @@ on:
 
 jobs:
   authenticate:
-    name: Authenticate to AWS
+    name: Create database credentials
     runs-on: ubuntu-latest
 
     permissions:
@@ -21,7 +21,7 @@ jobs:
       - name: Install yq (YAML Processor)
         run: sudo snap install yq  
 
-      - name: Get Environment Variables
+      - name: Create environment variables
         id: read_variables
         run: |
           echo "REGION=$(yq e .region onboarding.yaml)" >> $GITHUB_ENV
@@ -29,7 +29,7 @@ jobs:
           echo "CUSTOMER=$(yq e .customer onboarding.yaml)" >> $GITHUB_ENV
           echo "ACCOUNT=$(yq e .account onboarding.yaml)" >> $GITHUB_ENV
 
-      - name: Configure AWS credentials
+      - name: Authenticate to AWS
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: ${{ env.REGION }}
@@ -48,4 +48,4 @@ jobs:
 
       - name: Create secret
         run: |
-          aws secretsmanager create-secret --name "secret-${{ env.CUSTOMER }}" --secret-string "{\"${{ env.ENVIRONMENT }}}-db_user\":\"postgres\",\"password\":\"${{ env.PASSWORD }}\"}"
+          aws secretsmanager create-secret --name "secret-${{ env.CUSTOMER }}" --secret-string "{\"${{ env.ENVIRONMENT }}-db_user\":\"postgres\",\"${{ env.ENVIRONMENT }}-pwd\":\"${{ env.PASSWORD }}\"}"
