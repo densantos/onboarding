@@ -40,10 +40,3 @@ jobs:
         run: |
           PPASSWORD=$(aws secretsmanager get-random-password --require-each-included-type --password-length 10 --output text --query 'RandomPassword')
           aws secretsmanager create-secret --name "Secret-${CUSTOMER}" --secret-string "{\"db_user\":\"postgres\",\"password\":\"$PASSWORD\"}"
-
-#to clone
-git clone git@github.com:personal_account_name/repo_name.git
-git clone git@github.com-work_user1:work_user1/repo_name.git
-
-# set origin
-git remote set-url origin git@github.com-dsantos:densantos/onboarding.git
