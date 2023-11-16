@@ -48,4 +48,4 @@ jobs:
 
       - name: Create secret
         run: |
-          aws secretsmanager create-secret --name "secret-${{ env.CUSTOMER }}" --secret-string "{\"${{ env.ENVIRONMENT }}-db_user\":\"postgres\",\"${{ env.ENVIRONMENT }}-pwd\":\"${{ env.PASSWORD }}\"}"
+          aws secretsmanager create-secret --name "secret-test-${{ env.CUSTOMER }}" --secret-string "{\"${{ env.ENVIRONMENT }}-db_user\":\"postgres\",\"${{ env.ENVIRONMENT }}-pwd\":\"${{ env.PASSWORD }}\"}"
