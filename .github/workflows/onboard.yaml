@@ -45,6 +45,7 @@ jobs:
         id: generate_password
         run: |
           echo "PASSWORD=$(python generate_password.py)" >> $GITHUB_ENV
+          echo "::add-mask::$PASSWORD"
 
       - name: Create secret
         run: |
