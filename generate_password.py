@@ -12,3 +12,6 @@ def generate_password(length=12):
     # Generating a random password
     password = ''.join(secrets.choice(characters) for i in range(length))
     return password
+
+# Print the password so that it can be captured by GitHub Actions
+print(generate_password())
